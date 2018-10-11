@@ -1,14 +1,13 @@
-import React, { Component } from 'react';
 import './App.css';
+import React, { Component } from 'react';
+
 import Movies from './components/Movies';
 
 class App extends Component {
   render() {
     return (
       <main className="container">
-        <div className="starter-template">
-          <Movies />
-        </div>
+        <Movies />
       </main >
     );
   }
