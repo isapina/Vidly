@@ -1,35 +1,43 @@
-import _ from 'lodash';
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import MoviesTableItem from './MoviesTableItem';
+import Like from './common/Like';
+import Table from './common/Table';
 
-const MoviesTable = ({ movies, onDelete, onLike }) => {
-  const movieList = _.map(movies, movie => <MoviesTableItem key={movie._id} movie={movie} onDelete={onDelete} onLike={onLike} />);
+class MoviesTable extends Component {
+  columns = [
+    { path: 'title', label: 'Title' },
+    { path: 'genre.name', label: 'Genre' },
+    { path: 'numberInStock', label: 'Stock' },
+    { path: 'dailyRentalRate', label: 'Rate' },
+    { key: 'like', content: (movie) => <Like liked={movie.liked} onClick={() => this.props.onLike(movie)} /> },
+    {
+      key: 'delete', content: (movie) => <input
+        type="button"
+        className="btn btn-danger btn-sm"
+        value="Delete"
+        onClick={() => this.props.onDelete(movie)}
+      />
+    }
+  ];
 
-  return (
-    <table className="table">
-      <thead>
-        <tr>
-          <th scope="col">Title</th>
-          <th scope="col">Genre</th>
-          <th scope="col">Stock</th>
-          <th scope="col">Rate</th>
-          <th scope="col"></th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        {movieList}
-      </tbody>
-    </table>
-  );
+  render() {
+    const { movies, sortColumn, onSort } = this.props;
+
+    return (
+      <Table
+        columns={this.columns}
+        data={movies}
+        sortColumn={sortColumn}
+        onSort={onSort} />
+    );
+  }
 };
 
 MoviesTable.propTypes = {
   movies: PropTypes.array.isRequired,
   onDelete: PropTypes.func.isRequired,
-  onToggleLike: PropTypes.func.isRequired
+  onLike: PropTypes.func.isRequired
 };
 
 export default MoviesTable;
