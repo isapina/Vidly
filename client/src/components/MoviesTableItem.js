@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Like from './common/Like';
 
-const MovieTableItem = ({ movie, onDelete, onToggleLike }) => {
+const MoviesTableItem = ({ movie, onDelete, onLike }) => {
   return (
     <tr key={movie._id}>
       <td>{movie.title}</td>
@@ -11,7 +11,7 @@ const MovieTableItem = ({ movie, onDelete, onToggleLike }) => {
       <td>{movie.numberInStock}</td>
       <td>{movie.dailyRentalRate}</td>
       <td>
-        <Like onClick={() => onToggleLike(movie)} liked={movie.liked} />
+        <Like onClick={() => onLike(movie)} liked={movie.liked} />
       </td>
       <td>
         <input
@@ -25,10 +25,10 @@ const MovieTableItem = ({ movie, onDelete, onToggleLike }) => {
   );
 };
 
-MovieTableItem.propTypes = {
+MoviesTableItem.propTypes = {
   movie: PropTypes.object.isRequired,
   onDelete: PropTypes.func.isRequired,
   onToggleLike: PropTypes.func.isRequired
 };
 
-export default MovieTableItem;
+export default MoviesTableItem;

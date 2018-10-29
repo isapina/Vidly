@@ -1,21 +1,26 @@
-import React, { Component, Fragment } from 'react';
 import _ from 'lodash';
+import React, { Component } from 'react';
 
 import { getMovies } from '../services/fakeMovieService';
-import MovieTable from './MovieTable';
+import { getGenres } from '../services/fakeGenreService';
+import MoviesTable from './MoviesTable';
 import Pagination from './common/Pagination';
+import ListGroup from './common/ListGroup';
 import { paginate } from '../utils/paginate';
 
 class Movies extends Component {
   state = {
     movies: [],
+    genres: [],
     pageSize: 4,
     currentPage: 1
   }
 
   componentDidMount() {
-    const movies = getMovies().map(movie => ({ ...movie, liked: false }));
-    this.setState({ movies })
+    const movies = _.map(getMovies(), movie => ({ ...movie, liked: false }));
+    const genres = [{ name: 'All Genres' }, ...getGenres()];
+
+    this.setState({ movies, genres })
   }
 
   handleLike = movie => {
@@ -23,11 +28,13 @@ class Movies extends Component {
     const index = movies.indexOf(movie);
     movies[index] = { ...movies[index] };
     movies[index].liked = !movies[index].liked;
+
     this.setState({ movies });
   }
 
   handleDelete = (movie) => {
     const movies = _.filter(this.state.movies, m => m._id !== movie._id);
+
     this.setState({ movies });
   }
 
@@ -35,28 +42,45 @@ class Movies extends Component {
     this.setState({ currentPage: page });
   }
 
+  handleGenreSelect = (genre) => {
+    this.setState({ selectedGenre: genre, currentPage: 1 });
+  }
+
   render() {
     const { length: count } = this.state.movies;
-    const { movies: allMovies, currentPage, pageSize } = this.state;
+    const { movies: allMovies, currentPage, selectedGenre, pageSize } = this.state;
 
     if (count === 0)
       return <p>There are no movies in the database.</p>
 
-    const movies = paginate(allMovies, currentPage, pageSize);
+    const filtered = selectedGenre && selectedGenre._id
+      ? _.filter(allMovies, m => m.genre._id === selectedGenre._id)
+      : allMovies;
+
+    const movies = paginate(filtered, currentPage, pageSize);
 
     return (
-      <Fragment>
-        <p>Showing {count} movies in the database.</p>
-        <Pagination
-          pageSize={pageSize}
-          currentPage={currentPage}
-          totalItems={count}
-          onPageChange={this.handlePageChange} />
-        <MovieTable
-          movies={movies}
-          onDelete={this.handleDelete}
-          onToggleLike={this.handleLike} />
-      </Fragment>
+      <div className="row">
+        <div className="col-3">
+          <ListGroup
+            items={this.state.genres}
+            selectedItem={this.state.selectedGenre}
+            onItemSelect={this.handleGenreSelect}
+          />
+        </div>
+        <div className="col">
+          <p>Showing {filtered.length} movies in the database.</p>
+          <Pagination
+            itemsCount={filtered.length}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={this.handlePageChange} />
+          <MoviesTable
+            movies={movies}
+            onDelete={this.handleDelete}
+            onLike={this.handleLike} />
+        </div>
+      </div>
     );
   }
 };

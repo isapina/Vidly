@@ -2,10 +2,11 @@ import _ from 'lodash';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import MovieTableItem from './MovieTableItem';
+import MoviesTableItem from './MoviesTableItem';
 
-const MovieTable = ({ movies, onDelete, onToggleLike }) => {
-  const movieList = _.map(movies, movie => <MovieTableItem key={movie._id} movie={movie} onDelete={onDelete} onToggleLike={onToggleLike} />);
+const MoviesTable = ({ movies, onDelete, onLike }) => {
+  const movieList = _.map(movies, movie => <MoviesTableItem key={movie._id} movie={movie} onDelete={onDelete} onLike={onLike} />);
+
   return (
     <table className="table">
       <thead>
@@ -25,10 +26,10 @@ const MovieTable = ({ movies, onDelete, onToggleLike }) => {
   );
 };
 
-MovieTable.propTypes = {
+MoviesTable.propTypes = {
   movies: PropTypes.array.isRequired,
   onDelete: PropTypes.func.isRequired,
   onToggleLike: PropTypes.func.isRequired
 };
 
-export default MovieTable;
+export default MoviesTable;
