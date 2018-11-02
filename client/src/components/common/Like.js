@@ -13,7 +13,6 @@ const Like = ({ liked, onClick }) => {
 };
 
 Like.propTypes = {
-  liked: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired
 };
 
