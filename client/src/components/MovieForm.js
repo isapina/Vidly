@@ -1,10 +1,10 @@
 import React from 'react';
 import Joi from 'joi-browser';
+import { toast } from 'react-toastify';
 
 import Form from './common/Form';
-import Dropdown from './common/Select';
-import { getMovie, saveMovie } from '../services/fakeMovieService';
-import { getGenres } from '../services/fakeGenreService';
+import { getMovie, saveMovie } from '../services/movieService';
+import { getGenres } from '../services/genreService';
 
 class MovieForm extends Form {
   state = {
@@ -25,17 +25,26 @@ class MovieForm extends Form {
     numberInStock: Joi.number().min(0).max(100).required().label('Number in Stock'),
     dailyRentalRate: Joi.number().min(1).max(10).required().label('Daily Rental Rate')
   }
-  componentDidMount() {
-    const genres = getGenres();
+
+  populateGenres = async () => {
+    const { data: genres } = await getGenres();
     this.setState({ genres });
+  }
 
-    const movieId = this.props.match.params.id;
-    if (movieId === 'new') return;
+  popuateMovie = async () => {
+    try {
+      const movieId = this.props.match.params.id;
+      if (movieId === 'new') return;
+      const { data: movie } = await getMovie(movieId);
+      this.setState({ data: this.mapToViewModel(movie) })
+    } catch (error) {
+      if (error.response && error.response.status === 404) this.props.history.replace('/not-found');
+    }
+  }
 
-    const movie = getMovie(movieId);
-    if (!movie) return this.props.history.replace('/not-found');
-
-    this.setState({ data: this.mapToViewModel(movie) })
+  async componentDidMount() {
+    await this.populateGenres();
+    await this.popuateMovie();
   }
 
   mapToViewModel = (movie) => {
@@ -48,10 +57,13 @@ class MovieForm extends Form {
     };
   }
 
-  doSubmit() {
-    saveMovie(this.state.data);
-
-    this.props.history.push('/movies');
+  doSubmit = async () => {
+    try {
+      await saveMovie(this.state.data);
+      this.props.history.push('/movies');
+    } catch (error) {
+      toast.error(error.response.data);
+    }
   }
 
   render() {

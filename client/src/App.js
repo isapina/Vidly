@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 import NavBar from './components/NavBar';
 import Movies from './components/Movies';
@@ -10,12 +11,14 @@ import Customers from './components/Customers';
 import Rentals from './components/Rentals';
 import NotFound from './components/NotFound';
 
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
 class App extends Component {
   render() {
     return (
       <Fragment>
+        <ToastContainer />
         <NavBar />
         <main className="container">
           <Switch>
